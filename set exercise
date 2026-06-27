@@ -1,0 +1,728 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/stacykeago/predictive-data-analytics/blob/main/set%20exercise\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Import the libraries"
+      ],
+      "metadata": {
+        "id": "NAhWK8ERy0F9"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "6cby762DxJO5"
+      },
+      "outputs": [],
+      "source": [
+        "import numpy as np # for linear algebra\n",
+        "import pandas as pd # for data processing\n",
+        "import matplotlib.pyplot as plt # for data visualization\n",
+        "import seaborn as sns # for statistical data visualization\n",
+        "from sklearn.preprocessing import LabelEncoder # the libraries for label encoding\n",
+        "import matplotlib.pyplot as plt\n",
+        "from sklearn.preprocessing import MinMaxScaler\n",
+        "from statsmodels.stats.outliers_influence import variance_inflation_factor\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.preprocessing import StandardScaler"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Upload the datasets"
+      ],
+      "metadata": {
+        "id": "NTKraMBrzSiY"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "url = 'https://drive.google.com/uc?export=download&id=1o2zNGpyc7llWJCPbf6RXCJuweYCfrvnt'\n",
+        "data = pd.read_csv(url)\n",
+        "data.head(10)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 363
+        },
+        "id": "Vs7mp4sNxqNE",
+        "outputId": "e756ecf5-9c21-4bdb-debe-6699c7138b81"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "        X1      X2       X3       X4  Label\n",
+              "0  3.62160  8.6661 -2.80730 -0.44699    0.0\n",
+              "1  4.54590  8.1674 -2.45860 -1.46210    0.0\n",
+              "2  3.86600 -2.6383  1.92420  0.10645    0.0\n",
+              "3  3.45660  9.5228 -4.01120 -3.59440    0.0\n",
+              "4  0.32924 -4.4552  4.57180 -0.98880    0.0\n",
+              "5  4.36840  9.6718 -3.96060 -3.16250    0.0\n",
+              "6  3.59120  3.0129  0.72888  0.56421    0.0\n",
+              "7  2.09220 -6.8100  8.46360 -0.60216    0.0\n",
+              "8  3.20320  5.7588 -0.75345 -0.61251    0.0\n",
+              "9  1.53560  9.1772 -2.27180 -0.73535    0.0"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-5e70345e-f83d-4026-b7d0-c62b10df3971\" class=\"colab-df-container\">\n",
+              "    <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>X1</th>\n",
+              "      <th>X2</th>\n",
+              "      <th>X3</th>\n",
+              "      <th>X4</th>\n",
+              "      <th>Label</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>3.62160</td>\n",
+              "      <td>8.6661</td>\n",
+              "      <td>-2.80730</td>\n",
+              "      <td>-0.44699</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>4.54590</td>\n",
+              "      <td>8.1674</td>\n",
+              "      <td>-2.45860</td>\n",
+              "      <td>-1.46210</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>3.86600</td>\n",
+              "      <td>-2.6383</td>\n",
+              "      <td>1.92420</td>\n",
+              "      <td>0.10645</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>3.45660</td>\n",
+              "      <td>9.5228</td>\n",
+              "      <td>-4.01120</td>\n",
+              "      <td>-3.59440</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>0.32924</td>\n",
+              "      <td>-4.4552</td>\n",
+              "      <td>4.57180</td>\n",
+              "      <td>-0.98880</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>5</th>\n",
+              "      <td>4.36840</td>\n",
+              "      <td>9.6718</td>\n",
+              "      <td>-3.96060</td>\n",
+              "      <td>-3.16250</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>6</th>\n",
+              "      <td>3.59120</td>\n",
+              "      <td>3.0129</td>\n",
+              "      <td>0.72888</td>\n",
+              "      <td>0.56421</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>7</th>\n",
+              "      <td>2.09220</td>\n",
+              "      <td>-6.8100</td>\n",
+              "      <td>8.46360</td>\n",
+              "      <td>-0.60216</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>8</th>\n",
+              "      <td>3.20320</td>\n",
+              "      <td>5.7588</td>\n",
+              "      <td>-0.75345</td>\n",
+              "      <td>-0.61251</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>9</th>\n",
+              "      <td>1.53560</td>\n",
+              "      <td>9.1772</td>\n",
+              "      <td>-2.27180</td>\n",
+              "      <td>-0.73535</td>\n",
+              "      <td>0.0</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "    <div class=\"colab-df-buttons\">\n",
+              "\n",
+              "  <div class=\"colab-df-container\">\n",
+              "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-5e70345e-f83d-4026-b7d0-c62b10df3971')\"\n",
+              "            title=\"Convert this dataframe to an interactive table.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\">\n",
+              "    <path d=\"M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "\n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-buttons div {\n",
+              "      margin-bottom: 4px;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "    <script>\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#df-5e70345e-f83d-4026-b7d0-c62b10df3971 button.colab-df-convert');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      async function convertToInteractive(key) {\n",
+              "        const element = document.querySelector('#df-5e70345e-f83d-4026-b7d0-c62b10df3971');\n",
+              "        const dataTable =\n",
+              "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                    [key], {});\n",
+              "        if (!dataTable) return;\n",
+              "\n",
+              "        const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "          '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "          + ' to learn more about interactive tables.';\n",
+              "        element.innerHTML = '';\n",
+              "        dataTable['output_type'] = 'display_data';\n",
+              "        await google.colab.output.renderOutput(dataTable, element);\n",
+              "        const docLink = document.createElement('div');\n",
+              "        docLink.innerHTML = docLinkHtml;\n",
+              "        element.appendChild(docLink);\n",
+              "      }\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "\n",
+              "    </div>\n",
+              "  </div>\n"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "dataframe",
+              "variable_name": "data",
+              "summary": "{\n  \"name\": \"data\",\n  \"rows\": 1375,\n  \"fields\": [\n    {\n      \"column\": \"X1\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 3.4189773293630914,\n        \"min\": -70.0,\n        \"max\": 6.8248,\n        \"num_unique_values\": 1339,\n        \"samples\": [\n          4.223,\n          -1.7322,\n          4.1529\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"X2\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 6.676093516957186,\n        \"min\": -13.7731,\n        \"max\": 120.0,\n        \"num_unique_values\": 1257,\n        \"samples\": [\n          8.7324,\n          -4.6145,\n          6.1499\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"X3\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 4.5270558921554676,\n        \"min\": -50.0,\n        \"max\": 17.9274,\n        \"num_unique_values\": 1271,\n        \"samples\": [\n          -0.72004,\n          4.8254,\n          2.7742\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"X4\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 2.987968045388664,\n        \"min\": -80.0,\n        \"max\": 2.4495,\n        \"num_unique_values\": 1157,\n        \"samples\": [\n          1.0233,\n          -3.0771,\n          -0.026738\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"Label\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 0.497030410758681,\n        \"min\": 0.0,\n        \"max\": 1.0,\n        \"num_unique_values\": 2,\n        \"samples\": [\n          1.0,\n          0.0\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    }\n  ]\n}"
+            }
+          },
+          "metadata": {},
+          "execution_count": 2
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Check for the rows and columns"
+      ],
+      "metadata": {
+        "id": "kKxZHKouzt8x"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Print number of rows and columns\n",
+        "print(f\"Rows: {data.shape[0]}, Columns: {data.shape[1]}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "vAMb0g2Rzf-V",
+        "outputId": "abb5dd18-e64c-4025-b023-d28b60a412e5"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Rows: 1375, Columns: 5\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Check the data types"
+      ],
+      "metadata": {
+        "id": "1-1VHmsbzzym"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data.dtypes"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 241
+        },
+        "id": "EEwOcAY7zoKs",
+        "outputId": "5c96b77d-605e-49ef-ea12-17f2387ebd1b"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "X1       float64\n",
+              "X2       float64\n",
+              "X3       float64\n",
+              "X4       float64\n",
+              "Label    float64\n",
+              "dtype: object"
+            ],
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>0</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>X1</th>\n",
+              "      <td>float64</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>X2</th>\n",
+              "      <td>float64</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>X3</th>\n",
+              "      <td>float64</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>X4</th>\n",
+              "      <td>float64</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>Label</th>\n",
+              "      <td>float64</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div><br><label><b>dtype:</b> object</label>"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 4
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## check for missing values"
+      ],
+      "metadata": {
+        "id": "3up5v-wIz312"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### check for symbols in the data"
+      ],
+      "metadata": {
+        "id": "BWUCtAD70oOc"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "for col in data.columns:\n",
+        "    count = data[col].astype(str).str.contains(r'[^a-zA-Z0-9\\s.]', na=False).sum()\n",
+        "    if count > 0:\n",
+        "        print(f\"Column '{col}' has {count} rows with symbols.\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "yKVp3PCP0OS0",
+        "outputId": "ed27b2d8-732c-47a3-c69a-ac151b67dc06"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Column 'X1' has 609 rows with symbols.\n",
+            "Column 'X2' has 465 rows with symbols.\n",
+            "Column 'X3' has 586 rows with symbols.\n",
+            "Column 'X4' has 902 rows with symbols.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "qK4n1CDx0trU"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## check for anomalies"
+      ],
+      "metadata": {
+        "id": "5WnNkS5S0Djq"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## check for outliers"
+      ],
+      "metadata": {
+        "id": "NUuXd0tU0Hn_"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## statistical analysis of the data"
+      ],
+      "metadata": {
+        "id": "EM1har6x0RnV"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data.describe()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 300
+        },
+        "id": "68r6BPDT0VHP",
+        "outputId": "d41cde27-4b6d-4c75-8c76-bdf3ce2d6c4d"
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "                X1           X2           X3           X4        Label\n",
+              "count  1375.000000  1375.000000  1375.000000  1375.000000  1374.000000\n",
+              "mean      0.386657     2.014202     1.359162    -1.250522     0.443959\n",
+              "std       3.418977     6.676094     4.527056     2.987968     0.497030\n",
+              "min     -70.000000   -13.773100   -50.000000   -80.000000     0.000000\n",
+              "25%      -1.774700    -1.697850    -1.630450    -2.428000     0.000000\n",
+              "50%       0.496650     2.325900     0.616630    -0.586650     0.000000\n",
+              "75%       2.822050     6.819300     3.181600     0.394810     1.000000\n",
+              "max       6.824800   120.000000    17.927400     2.449500     1.000000"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-03ffcf5d-e521-41b7-9da6-7330d1f05bb5\" class=\"colab-df-container\">\n",
+              "    <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>X1</th>\n",
+              "      <th>X2</th>\n",
+              "      <th>X3</th>\n",
+              "      <th>X4</th>\n",
+              "      <th>Label</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>count</th>\n",
+              "      <td>1375.000000</td>\n",
+              "      <td>1375.000000</td>\n",
+              "      <td>1375.000000</td>\n",
+              "      <td>1375.000000</td>\n",
+              "      <td>1374.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>mean</th>\n",
+              "      <td>0.386657</td>\n",
+              "      <td>2.014202</td>\n",
+              "      <td>1.359162</td>\n",
+              "      <td>-1.250522</td>\n",
+              "      <td>0.443959</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>std</th>\n",
+              "      <td>3.418977</td>\n",
+              "      <td>6.676094</td>\n",
+              "      <td>4.527056</td>\n",
+              "      <td>2.987968</td>\n",
+              "      <td>0.497030</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>min</th>\n",
+              "      <td>-70.000000</td>\n",
+              "      <td>-13.773100</td>\n",
+              "      <td>-50.000000</td>\n",
+              "      <td>-80.000000</td>\n",
+              "      <td>0.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>25%</th>\n",
+              "      <td>-1.774700</td>\n",
+              "      <td>-1.697850</td>\n",
+              "      <td>-1.630450</td>\n",
+              "      <td>-2.428000</td>\n",
+              "      <td>0.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>50%</th>\n",
+              "      <td>0.496650</td>\n",
+              "      <td>2.325900</td>\n",
+              "      <td>0.616630</td>\n",
+              "      <td>-0.586650</td>\n",
+              "      <td>0.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>75%</th>\n",
+              "      <td>2.822050</td>\n",
+              "      <td>6.819300</td>\n",
+              "      <td>3.181600</td>\n",
+              "      <td>0.394810</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>max</th>\n",
+              "      <td>6.824800</td>\n",
+              "      <td>120.000000</td>\n",
+              "      <td>17.927400</td>\n",
+              "      <td>2.449500</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "    <div class=\"colab-df-buttons\">\n",
+              "\n",
+              "  <div class=\"colab-df-container\">\n",
+              "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-03ffcf5d-e521-41b7-9da6-7330d1f05bb5')\"\n",
+              "            title=\"Convert this dataframe to an interactive table.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\">\n",
+              "    <path d=\"M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "\n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-buttons div {\n",
+              "      margin-bottom: 4px;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "    <script>\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#df-03ffcf5d-e521-41b7-9da6-7330d1f05bb5 button.colab-df-convert');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      async function convertToInteractive(key) {\n",
+              "        const element = document.querySelector('#df-03ffcf5d-e521-41b7-9da6-7330d1f05bb5');\n",
+              "        const dataTable =\n",
+              "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                    [key], {});\n",
+              "        if (!dataTable) return;\n",
+              "\n",
+              "        const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "          '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "          + ' to learn more about interactive tables.';\n",
+              "        element.innerHTML = '';\n",
+              "        dataTable['output_type'] = 'display_data';\n",
+              "        await google.colab.output.renderOutput(dataTable, element);\n",
+              "        const docLink = document.createElement('div');\n",
+              "        docLink.innerHTML = docLinkHtml;\n",
+              "        element.appendChild(docLink);\n",
+              "      }\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "\n",
+              "    </div>\n",
+              "  </div>\n"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "dataframe",
+              "summary": "{\n  \"name\": \"data\",\n  \"rows\": 8,\n  \"fields\": [\n    {\n      \"column\": \"X1\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 489.7121918116025,\n        \"min\": -70.0,\n        \"max\": 1375.0,\n        \"num_unique_values\": 8,\n        \"samples\": [\n          0.38665707105454544,\n          0.49665,\n          1375.0\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"X2\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 481.8202907370174,\n        \"min\": -13.7731,\n        \"max\": 1375.0,\n        \"num_unique_values\": 8,\n        \"samples\": [\n          2.01420238656,\n          2.3259,\n          1375.0\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"X3\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 487.7555084498258,\n        \"min\": -50.0,\n        \"max\": 1375.0,\n        \"num_unique_values\": 8,\n        \"samples\": [\n          1.3591621853745455,\n          0.61663,\n          1375.0\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"X4\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 490.90471935373625,\n        \"min\": -80.0,\n        \"max\": 1375.0,\n        \"num_unique_values\": 8,\n        \"samples\": [\n          -1.2505217567272728,\n          -0.58665,\n          1375.0\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"Label\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 485.63399401716174,\n        \"min\": 0.0,\n        \"max\": 1374.0,\n        \"num_unique_values\": 5,\n        \"samples\": [\n          0.44395924308588064,\n          1.0,\n          0.497030410758681\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    }\n  ]\n}"
+            }
+          },
+          "metadata": {},
+          "execution_count": 6
+        }
+      ]
+    }
+  ]
+}
